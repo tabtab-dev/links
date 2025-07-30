@@ -1,0 +1,121 @@
+---
+export interface Props {
+  showSocial?: boolean;
+  showCopyright?: boolean;
+}
+
+const { showSocial = true, showCopyright = true } = Astro.props;
+
+const socialLinks = [
+  {
+    name: 'GitHub',
+    url: 'https://github.com',
+    icon: '🐙',
+    color: 'hover:text-gray-900 dark:hover:text-white'
+  },
+  {
+    name: 'Twitter',
+    url: 'https://twitter.com',
+    icon: '🐦',
+    color: 'hover:text-blue-500'
+  },
+  {
+    name: 'Email',
+    url: 'mailto:hello@example.com',
+    icon: '📧',
+    color: 'hover:text-red-500'
+  }
+];
+
+const currentYear = new Date().getFullYear();
+---
+
+<footer class="relative mt-20 py-12 bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
+
+  <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- 主要内容 -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+      <!-- 品牌信息 -->
+      <div class="space-y-4">
+        <div class="flex items-center space-x-2">
+          <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+            <span class="text-white font-bold text-sm">L</span>
+          </div>
+          <span class="text-xl font-bold text-gray-900 dark:text-white">TabLinks</span>
+        </div>
+        <p class="text-sm text-gray-600 dark:text-gray-400">
+          精心整理的高质量链接集合，助您发现更多优质资源。
+        </p>
+      </div>
+
+      <!-- 快速链接 -->
+      <div>
+        <h3 class="text-sm font-semibold text-gray-900 dark:text-white uppercase tracking-wider mb-4">
+          快速链接
+        </h3>
+        <ul class="space-y-2">
+          <li>
+            <a href="/" class="text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200">
+              首页
+            </a>
+          </li>
+          <li>
+            <a href="/category" class="text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200">
+              分类
+            </a>
+          </li>
+          <li>
+            <a href="/about" class="text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200">
+              关于我们
+            </a>
+          </li>
+          <li>
+            <a href="/links" class="text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200">
+              所有链接
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- 社交链接 -->
+      {showSocial && (
+        <div>
+          <h3 class="text-sm font-semibold text-gray-900 dark:text-white uppercase tracking-wider mb-4">
+            关注我们
+          </h3>
+          <div class="flex space-x-4">
+            {socialLinks.map(link => (
+                  <a
+                href={link.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                class={`text-2xl ${link.color} transition-colors duration-200`}
+                title={link.name}
+                aria-label={link.name}
+              >
+                {link.icon}
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+
+    <!-- 版权信息 -->
+    {showCopyright && (
+      <div class="border-t border-gray-200 dark:border-gray-700 pt-8">
+        <div class="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+          <p class="text-sm text-gray-500 dark:text-gray-400">
+            © {currentYear} TabLinks. 用心制作，用爱分享。
+          </p>
+          
+
+        </div>
+      </div>
+    )}
+  </div>
+</footer>
+
+<style>
+/* 移除所有动画样式 */
+</style>

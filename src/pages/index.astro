@@ -1,0 +1,324 @@
+---
+import Layout from '../layouts/Layout.astro';
+import SearchBox from '../components/SearchBox.astro';
+import LinkCard from '../components/LinkCard.astro';
+import { getCollection } from 'astro:content';
+
+// 获取所有链接数据
+const links = await getCollection('links');
+
+// 按标题排序
+const sortedLinks = links.sort((a, b) => a.data.title.localeCompare(b.data.title));
+
+// 获取所有分类
+const categories = [...new Set(links.map(link => link.data.category))];
+
+// 随机选择4个分类
+function getRandomCategories(categories: string[], count: number): string[] {
+  if (categories.length <= count) return categories;
+  const shuffled = [...categories].sort(() => 0.5 - Math.random());
+  return shuffled.slice(0, count);
+}
+
+// 随机选择12个链接
+function getRandomLinks(links: any[], count: number): any[] {
+  if (links.length <= count) return links;
+  const shuffled = [...links].sort(() => 0.5 - Math.random());
+  return shuffled.slice(0, count);
+}
+
+const randomCategories = getRandomCategories(categories, 4);
+const randomLinks = getRandomLinks(sortedLinks, 12);
+
+// 生成API数据
+const apiData = links.map(link => ({
+  title: link.data.title,
+  url: link.data.url,
+  description: link.data.description,
+  category: link.data.category,
+  icon: link.data.icon,
+  tags: link.data.tags
+}));
+---
+
+<Layout title="TabLinks - 精选链接集合" description="精心整理的高质量链接集合，助您发现更多优质资源。">
+  <div class="max-w-7xl mx-auto">
+    <!-- 欢迎区域 -->
+    <div class="text-center mb-12">
+      <div class="mb-8">
+        <div class="w-20 h-20 mx-auto bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 rounded-2xl flex items-center justify-center shadow-2xl">
+          <span class="text-3xl text-white font-bold">T</span>
+        </div>
+      </div>
+      <h1 class="text-5xl font-bold text-gray-900 dark:text-white mb-4">
+        欢迎来到 <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-600">TabLinks</span>
+      </h1>
+      <p class="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+        精心整理的高质量链接集合，助您发现更多优质资源，提升工作效率
+      </p>
+    </div>
+
+    <!-- 搜索框 -->
+    <SearchBox placeholder="搜索链接、分类或标签..." />
+
+    <!-- 统计卡片 -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+      <!-- 总链接数卡片 -->
+      <div class="group relative bg-gradient-to-br from-blue-500 via-blue-600 to-blue-700 rounded-2xl p-6 text-white shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-500 overflow-hidden">
+        <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-3xl transform translate-x-16 -translate-y-16"></div>
+        <div class="relative z-10">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center">
+              <div class="w-14 h-14 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+                </svg>
+              </div>
+              <div class="ml-4">
+                <div class="text-4xl font-bold">{links.length}</div>
+                <div class="text-blue-100 text-sm font-medium">精选链接</div>
+              </div>
+            </div>
+            <div class="text-white/60">
+              <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 105.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5z" clip-rule="evenodd"/>
+              </svg>
+            </div>
+          </div>
+          <div class="mt-4 text-xs text-blue-100/80">
+            精心筛选的高质量链接
+          </div>
+        </div>
+      </div>
+
+      <!-- 分类数量卡片 -->
+      <div class="group relative bg-gradient-to-br from-purple-500 via-purple-600 to-purple-700 rounded-2xl p-6 text-white shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-500 overflow-hidden">
+        <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-3xl transform translate-x-16 -translate-y-16"></div>
+        <div class="relative z-10">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center">
+              <div class="w-14 h-14 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                </svg>
+              </div>
+              <div class="ml-4">
+                <div class="text-4xl font-bold">{categories.length}</div>
+                <div class="text-purple-100 text-sm font-medium">分类目录</div>
+              </div>
+            </div>
+            <div class="text-white/60">
+              <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M3 3a1 1 0 000 2v8a2 2 0 002 2h2.586l-1.293 1.293a1 1 0 101.414 1.414L10 15.414l2.293 2.293a1 1 0 001.414-1.414L12.414 15H15a2 2 0 002-2V5a1 1 0 100-2H3zm11.707 4.707a1 1 0 00-1.414-1.414L10 9.586 8.707 8.293a1 1 0 00-1.414 0l-2 2a1 1 0 101.414 1.414L8 10.414l1.293 1.293a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+              </svg>
+            </div>
+          </div>
+          <div class="mt-4 text-xs text-purple-100/80">
+            清晰分类便于查找
+          </div>
+        </div>
+      </div>
+
+      <!-- 标签密度卡片 -->
+      <div class="group relative bg-gradient-to-br from-green-500 via-green-600 to-green-700 rounded-2xl p-6 text-white shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-500 overflow-hidden">
+        <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-3xl transform translate-x-16 -translate-y-16"></div>
+        <div class="relative z-10">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center">
+              <div class="w-14 h-14 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"/>
+                </svg>
+              </div>
+              <div class="ml-4">
+                <div class="text-4xl font-bold">
+                  {Math.round(links.reduce((sum, link) => sum + (link.data.tags?.length || 0), 0) / links.length || 0)}
+                </div>
+                <div class="text-green-100 text-sm font-medium">平均标签</div>
+              </div>
+            </div>
+            <div class="text-white/60">
+              <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M17.707 9.293a1 1 0 010 1.414l-7 7a1 1 0 01-1.414 0l-7-7A1 1 0 012 10V6a3 3 0 013-3h2a1 1 0 011 1v3a1 1 0 001 1h2a1 1 0 001-1V4a1 1 0 011-1h2a3 3 0 013 3v4zm-2-6a1 1 0 011-1h2a1 1 0 110 2h-2a1 1 0 01-1-1z" clip-rule="evenodd"/>
+              </svg>
+            </div>
+          </div>
+          <div class="mt-4 text-xs text-green-100/80">
+            每个链接平均标签数
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 分类快捷入口 -->
+    {randomCategories.length > 0 && (
+      <div class="mb-12">
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-2xl font-bold text-gray-900 dark:text-white">随机分类</h2>
+          <a href="/category" class="text-blue-600 hover:text-blue-700 text-sm font-medium">
+            查看全部 →
+          </a>
+        </div>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {randomCategories.map(category => {
+            const categoryCount = links.filter(link => link.data.category === category).length;
+            return (
+              <a 
+                href={`/category/${category.toLowerCase()}`}
+                class="group bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600 transition-all duration-300 shadow-sm hover:shadow-xl"
+              >
+                <div class="text-center">
+                  <div class="w-12 h-12 mx-auto mb-3 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <span class="text-white font-bold text-lg">
+                      {category.charAt(0).toUpperCase()}
+                    </span>
+                  </div>
+                  <h3 class="font-semibold text-gray-900 dark:text-white mb-1">{category}</h3>
+                  <p class="text-sm text-gray-500 dark:text-gray-400">{categoryCount} 个链接</p>
+                </div>
+              </a>
+            );
+          })}
+        </div>
+      </div>
+    )}
+    
+    <!-- 链接网格 -->
+    <div>
+      <div class="flex items-center justify-between mb-8">
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white">精选链接</h2>
+        <div class="flex items-center space-x-4">
+          <span id="link-count" class="text-sm text-gray-500 dark:text-gray-400">显示 {randomLinks.length} 个，共 {sortedLinks.length} 个</span>
+          <a href="/links/1" class="text-blue-600 hover:text-blue-700 text-sm font-medium">
+            查看全部分页 →
+          </a>
+        </div>
+      </div>
+      
+      {randomLinks.length > 0 ? (
+        <div id="links-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {randomLinks.map(link => (
+            <LinkCard link={link} />
+          ))}
+        </div>
+      ) : (
+        <div class="text-center py-20">
+          <div class="w-20 h-20 mx-auto mb-6 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center">
+            <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+            </svg>
+          </div>
+          <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">暂无链接</h3>
+        <p class="text-gray-500 dark:text-gray-400 mb-6">还没有添加任何链接，开始创建您的第一个链接吧！</p>
+          <a href="/admin" class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+            </svg>
+            添加第一个链接
+          </a>
+        </div>
+      )}
+    </div>
+  </div>
+</Layout>
+
+<script is:inline define:vars={{apiData}}>
+  // 将链接数据暴露给客户端脚本
+  window.linksData = apiData;
+  window.allLinks = [...window.linksData];
+  
+  // 筛选和排序功能
+  function filterAndSortLinks() {
+    const searchTerm = document.querySelector('#search-input')?.value.toLowerCase() || '';
+    const categoryFilter = document.getElementById('category-filter')?.value || '';
+    const sortBy = document.getElementById('sort-filter')?.value || 'title';
+    
+    let filtered = window.allLinks.filter(link => {
+      const matchesSearch = !searchTerm || 
+        link.title.toLowerCase().includes(searchTerm) ||
+        link.description?.toLowerCase().includes(searchTerm) ||
+        link.category.toLowerCase().includes(searchTerm) ||
+        link.tags?.some(tag => tag.toLowerCase().includes(searchTerm));
+      
+      const matchesCategory = !categoryFilter || link.category === categoryFilter;
+      
+      return matchesSearch && matchesCategory;
+    });
+    
+    // 排序
+    filtered.sort((a, b) => {
+      switch(sortBy) {
+        case 'title':
+          return a.title.localeCompare(b.title);
+        case 'category':
+          return a.category.localeCompare(b.category) || a.title.localeCompare(b.title);
+        case 'domain':
+          const domainA = new URL(a.url).hostname;
+          const domainB = new URL(b.url).hostname;
+          return domainA.localeCompare(domainB) || a.title.localeCompare(b.title);
+        default:
+          return 0;
+      }
+    });
+    
+    return filtered;
+  }
+  
+  // 渲染链接
+  function renderLinks(links) {
+    const container = document.getElementById('links-grid');
+    const emptySearch = document.getElementById('empty-search');
+    const linkCount = document.getElementById('link-count');
+    
+    if (!container || !emptySearch || !linkCount) return;
+    
+    if (links.length === 0) {
+      container.style.display = 'none';
+      emptySearch.classList.remove('hidden');
+    } else {
+      container.style.display = 'grid';
+      emptySearch.classList.add('hidden');
+    }
+    
+    linkCount.textContent = `共 ${links.length} 个`;
+    
+    // 这里应该重新渲染链接，但由于是静态页面，我们使用CSS隐藏/显示
+    // 实际应用中可以使用更复杂的渲染逻辑
+  }
+  
+  // 清除筛选
+  function clearFilters() {
+    document.getElementById('category-filter').value = '';
+    document.getElementById('sort-filter').value = 'title';
+    if (document.querySelector('#search-input')) {
+      document.querySelector('#search-input').value = '';
+    }
+    renderLinks(window.allLinks);
+  }
+  
+  // 事件监听
+  document.addEventListener('DOMContentLoaded', function() {
+    const categoryFilter = document.getElementById('category-filter');
+    const sortFilter = document.getElementById('sort-filter');
+    
+    if (categoryFilter) {
+      categoryFilter.addEventListener('change', () => {
+        const filtered = filterAndSortLinks();
+        renderLinks(filtered);
+      });
+    }
+    
+    if (sortFilter) {
+      sortFilter.addEventListener('change', () => {
+        const filtered = filterAndSortLinks();
+        renderLinks(filtered);
+      });
+    }
+    
+    // 监听搜索框变化（由SearchBox组件触发）
+    document.addEventListener('search-change', (e) => {
+      const filtered = filterAndSortLinks();
+      renderLinks(filtered);
+    });
+  });
+</script>

@@ -1,0 +1,174 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+// 项目信息
+const projectInfo = {
+  name: "TabLinks",
+  version: "1.0.0",
+  description: "精心整理的高质量链接集合，助您发现更多优质资源",
+  mission: "让优质资源触手可及",
+  created: "2024",
+  features: [
+    "精选高质量链接",
+    "智能分类管理",
+    "响应式设计",
+    "深色模式支持",
+    "快速搜索",
+    "简洁易用"
+  ]
+};
+
+// 技术栈
+const techStack = [
+  {
+    name: "Astro",
+    description: "静态站点生成器",
+    url: "https://astro.build",
+    icon: "🚀"
+  },
+  {
+    name: "Tailwind CSS",
+    description: "实用优先的CSS框架",
+    url: "https://tailwindcss.com",
+    icon: "🎨"
+  },
+  {
+    name: "TypeScript",
+    description: "类型安全的JavaScript",
+    url: "https://www.typescriptlang.org",
+    icon: "🔷"
+  },
+  {
+    name: "Markdown",
+    description: "内容管理系统",
+    url: "https://daringfireball.net/projects/markdown/",
+    icon: "📝"
+  }
+];
+
+
+
+// 统计数据（可动态更新）
+const stats = {
+  totalLinks: 50,
+  categories: 8,
+  lastUpdated: new Date().toLocaleDateString('zh-CN')
+};
+
+// 开发团队
+const team = [
+  {
+    name: "社区贡献者",
+    role: "维护者",
+    description: "由热爱分享的开发者共同维护",
+    avatar: "👥"
+  }
+];
+
+
+---
+
+<Layout title="关于我们 - TabLinks" description="了解TabLinks的使命、技术栈和贡献方式">
+  <!-- 页面头部 -->
+  <section class="relative py-20 bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800">
+    <div class="absolute inset-0 bg-grid-pattern opacity-5"></div>
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <h1 class="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6">
+        关于 <span class="text-blue-600">TabLinks</span>
+      </h1>
+      <p class="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
+        {projectInfo.description}
+      </p>
+    </div>
+  </section>
+
+  <!-- 项目使命 -->
+  <section class="py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">我们的使命</h2>
+        <p class="text-xl text-gray-600 dark:text-gray-300">{projectInfo.mission}</p>
+      </div>
+      
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {projectInfo.features.map((feature) => (
+          <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-700">
+            <div class="text-2xl mb-3">✨</div>
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">{feature}</h3>
+            <p class="text-gray-600 dark:text-gray-400">精心设计的{feature}功能，提升用户体验</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- 统计数据 -->
+  <section class="py-16 bg-gray-50 dark:bg-gray-900">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">项目数据</h2>
+        <p class="text-gray-600 dark:text-gray-400">截至{stats.lastUpdated}的统计信息</p>
+      </div>
+      
+      <div class="grid md:grid-cols-3 gap-8">
+        <div class="text-center">
+          <div class="text-4xl font-bold text-blue-600 mb-2">{stats.totalLinks}+</div>
+          <div class="text-gray-600 dark:text-gray-400">精选链接</div>
+        </div>
+        <div class="text-center">
+          <div class="text-4xl font-bold text-purple-600 mb-2">{stats.categories}</div>
+          <div class="text-gray-600 dark:text-gray-400">分类目录</div>
+        </div>
+        <div class="text-center">
+          <div class="text-4xl font-bold text-green-600 mb-2">100%</div>
+          <div class="text-gray-600 dark:text-gray-400">开源免费</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 技术栈 -->
+  <section class="py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">技术栈</h2>
+        <p class="text-gray-600 dark:text-gray-400">基于现代Web技术构建</p>
+      </div>
+      
+      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {techStack.map((tech) => (
+          <a 
+            href={tech.url} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            class="block bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-700 hover:shadow-xl transition-shadow duration-200"
+          >
+            <div class="text-center">
+              <div class="text-3xl mb-3">{tech.icon}</div>
+              <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-1">{tech.name}</h3>
+              <p class="text-sm text-gray-600 dark:text-gray-400">{tech.description}</p>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+
+
+
+
+  <!-- 背景样式 -->
+  <style>
+    .bg-grid-pattern {
+      background-image: 
+        radial-gradient(circle at 1px 1px, rgba(0,0,0,0.1) 1px, transparent 0);
+      background-size: 20px 20px;
+    }
+    
+    .dark .bg-grid-pattern {
+      background-image: 
+        radial-gradient(circle at 1px 1px, rgba(255,255,255,0.1) 1px, transparent 0);
+    }
+  </style>
+</Layout>

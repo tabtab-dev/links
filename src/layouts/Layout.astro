@@ -1,0 +1,352 @@
+---
+import '../assets/css/app.css'
+import ThemeToggle from '../components/ThemeToggle.astro';
+import BackgroundEffects from '../components/BackgroundEffects.astro';
+import Footer from '../components/Footer.astro';
+import MobileNav from '../components/MobileNav.astro';
+
+export interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { title = 'TabLinks - 精选链接集合', description = '精心整理的高质量链接集合，助您发现更多优质资源。' } = Astro.props;
+---
+
+<!doctype html>
+<html lang="zh-CN" class="light">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="generator" content={Astro.generator} />
+		<title>{title}</title>
+		<meta name="description" content={description} />
+		
+		<!-- SEO优化 -->
+		<meta name="keywords" content="TabLinks, 链接导航, 精选链接, 资源集合, 工具导航" />
+		<meta name="author" content="TabLinks" />
+		<meta name="robots" content="index, follow" />
+		
+		<!-- Open Graph / Facebook -->
+		<meta property="og:type" content="website" />
+		<meta property="og:url" content={Astro.url} />
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		<meta property="og:image" content="https://tabtab.example.com/og-image.jpg" />
+		<meta property="og:site_name" content="TabLinks" />
+		<meta property="og:locale" content="zh_CN" />
+		
+		<!-- Twitter -->
+		<meta property="twitter:card" content="summary_large_image" />
+		<meta property="twitter:url" content={Astro.url} />
+		<meta property="twitter:title" content={title} />
+		<meta property="twitter:description" content={description} />
+		<meta property="twitter:image" content="https://tabtab.example.com/og-image.jpg" />
+		
+		<!-- 移动端优化 -->
+		<meta name="theme-color" content="#3b82f6" />
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+		<meta name="apple-mobile-web-app-title" content="TabLinks" />
+		<meta name="format-detection" content="telephone=no" />
+		<meta name="mobile-web-app-capable" content="yes" />
+		
+		<!-- 预加载关键资源 -->
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		
+		<!-- 样式优化 -->
+		<style>
+			/* 基础样式重置 */
+			* {
+				box-sizing: border-box;
+			}
+			
+			html {
+				scroll-behavior: smooth;
+				-webkit-font-smoothing: antialiased;
+				-moz-osx-font-smoothing: grayscale;
+			}
+			
+			body {
+				font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+				padding-bottom: env(safe-area-inset-bottom, 0px);
+				-webkit-tap-highlight-color: transparent;
+			}
+			
+			/* 滚动条美化 */
+			::-webkit-scrollbar {
+				width: 8px;
+				height: 8px;
+			}
+			
+			::-webkit-scrollbar-track {
+				background: #f1f5f9;
+			}
+			
+			::-webkit-scrollbar-thumb {
+				background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+				border-radius: 4px;
+			}
+			
+			::-webkit-scrollbar-thumb:hover {
+				background: linear-gradient(135deg, #2563eb, #7c3aed);
+			}
+			
+			/* 暗黑模式滚动条 */
+			.dark ::-webkit-scrollbar-track {
+				background: #1e293b;
+			}
+			
+			.dark ::-webkit-scrollbar-thumb {
+				background: linear-gradient(135deg, #60a5fa, #a855f7);
+			}
+			
+			/* 选择样式 */
+			::selection {
+				background: rgba(59, 130, 246, 0.3);
+			}
+			
+			.dark ::selection {
+				background: rgba(96, 165, 250, 0.3);
+			}
+		</style>
+	</head>
+	<body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen">
+		<!-- 背景效果 -->
+		<BackgroundEffects />
+		
+		<!-- 页面头部 - 智能滚动效果 -->
+		<header class="fixed top-0 left-0 right-0 z-50 transition-all duration-500" id="main-header">
+			<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
+				<div class="bg-transparent transition-all duration-500" id="header-content">
+					<!-- 背景渐变装饰 -->
+					<div class="absolute in "></div>
+					
+					<div class="relative flex justify-between items-center bg-transparent rounded-[32px] p-4 transition-all duration-500">
+						<!-- Logo 区域 - 高级悬浮效果 -->
+						<div class="flex items-center space-x-4">
+							<div class="relative group">
+								<div class="w-12 h-12 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 rounded-2xl flex items-center justify-center shadow-xl transform transition-all duration-500 group-hover:scale-110 group-hover:rotate-6 group-hover:shadow-2xl">
+									<span class="text-white font-bold text-xl drop-shadow-lg">T</span>
+								</div>
+								<div class="absolute inset-0 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 rounded-2xl blur-2xl opacity-40 group-hover:opacity-60 transition-opacity duration-500 scale-125"></div>
+							</div>
+							<div>
+								<h1 class="text-2xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 dark:from-blue-400 dark:via-purple-400 dark:to-pink-400 bg-clip-text text-transparent">TabLinks</h1>
+								<p class="text-sm text-gray-600 dark:text-gray-300 font-medium">精选链接导航</p>
+							</div>
+						</div>
+
+						<!-- 桌面端导航菜单 - 高级按钮设计 -->
+						<nav class="hidden md:flex items-center space-x-1">
+							<a href="/" class="relative px-5 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-200 rounded-2xl hover:bg-white/50 dark:hover:bg-gray-700/50 transition-all duration-300 backdrop-blur-sm border border-transparent hover:border-white/30 dark:hover:border-gray-600/30 hover:shadow-lg group">
+								<span class="relative z-10">首页</span>
+								<div class="absolute inset-0 bg-gradient-to-r from-blue-500/0 via-purple-500/0 to-pink-500/0 group-hover:from-blue-500/10 group-hover:via-purple-500/10 group-hover:to-pink-500/10 rounded-2xl transition-all duration-300"></div>
+							</a>
+							<a href="/category" class="relative px-5 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-200 rounded-2xl hover:bg-white/50 dark:hover:bg-gray-700/50 transition-all duration-300 backdrop-blur-sm border border-transparent hover:border-white/30 dark:hover:border-gray-600/30 hover:shadow-lg group">
+								<span class="relative z-10">分类</span>
+								<div class="absolute inset-0 bg-gradient-to-r from-blue-500/0 via-purple-500/0 to-pink-500/0 group-hover:from-blue-500/10 group-hover:via-purple-500/10 group-hover:to-pink-500/10 rounded-2xl transition-all duration-300"></div>
+							</a>
+							<a href="/about" class="relative px-5 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-200 rounded-2xl hover:bg-white/50 dark:hover:bg-gray-700/50 transition-all duration-300 backdrop-blur-sm border border-transparent hover:border-white/30 dark:hover:border-gray-600/30 hover:shadow-lg group">
+								<span class="relative z-10">关于</span>
+								<div class="absolute inset-0 bg-gradient-to-r from-blue-500/0 via-purple-500/0 to-pink-500/0 group-hover:from-blue-500/10 group-hover:via-purple-500/10 group-hover:to-pink-500/10 rounded-2xl transition-all duration-300"></div>
+							</a>
+						</nav>
+
+						<!-- 右侧功能区 - 统一玻璃拟态设计 -->
+						<div class="flex items-center space-x-2">
+							<!-- 搜索按钮 -->
+							<button id="nav-search-btn" class="relative p-2.5 text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300 rounded-2xl hover:bg-white/50 dark:hover:bg-gray-700/50 backdrop-blur-sm border border-transparent hover:border-white/30 dark:hover:border-gray-600/30 hover:shadow-lg group" aria-label="搜索">
+								<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+								</svg>
+								<div class="absolute inset-0 bg-gradient-to-r from-blue-500/0 via-purple-500/0 to-pink-500/0 group-hover:from-blue-500/10 group-hover:via-purple-500/10 group-hover:to-pink-500/10 rounded-2xl transition-all duration-300"></div>
+							</button>
+							
+							<!-- 主题切换 - 集成到玻璃拟态设计中 -->
+							<ThemeToggle />
+							
+
+						</div>
+					</div>
+				</div>
+			</div>
+		</header>
+		
+		<!-- 顶部占位，防止内容被固定头部遮挡 -->
+		<div class="h-24"></div>
+
+		<!-- 主内容区 -->
+		<main class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-20 md:pb-8">
+			<slot />
+		</main>
+
+		<!-- 页脚 -->
+		<Footer />
+
+		<!-- 移动端导航 -->
+		<MobileNav currentPath={Astro.url.pathname} />
+
+		<!-- 回到顶部按钮 -->
+		<button
+			id="back-to-top"
+			class="fixed bottom-8 right-8 z-40 md:z-50 w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-full shadow-lg hover:scale-110 hover:shadow-xl transition-all duration-300 transform translate-y-full opacity-0"
+			aria-label="回到顶部"
+		>
+			<svg class="w-5 h-5 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/>
+			</svg>
+		</button>
+
+		<!-- 主题初始化脚本 -->
+		<script is:inline>
+			// 初始化主题 - 简化的主题检测
+			(function() {
+				const savedTheme = localStorage.getItem('theme');
+				const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+				const theme = savedTheme ? savedTheme : (prefersDark ? 'dark' : 'light');
+				
+				if (theme === 'dark') {
+					document.documentElement.classList.add('dark');
+				}
+			})();
+		</script>
+
+		<!-- 智能导航栏脚本 -->
+		<script is:inline>
+			(function() {
+				// 等待DOM加载完成
+				function initSmartHeader() {
+					const header = document.getElementById('main-header');
+					const headerContent = document.getElementById('header-content');
+					if (!header || !headerContent) return;
+
+					// 滚动阈值
+					const SCROLL_THRESHOLD = 50;
+
+					// 更新导航栏样式
+					function updateHeader() {
+						const scrollY = window.scrollY;
+						const isScrolled = scrollY > SCROLL_THRESHOLD;
+
+						if (isScrolled) {
+							// 滚动后的玻璃拟态效果
+							const innerContent = headerContent.querySelector('.relative.flex');
+							if (innerContent) {
+								innerContent.classList.add('bg-white/80', 'dark:bg-gray-800/80', 'backdrop-blur-3xl', 'shadow-[0_8px_32px_rgba(0,0,0,0.12)]', 'dark:shadow-[0_8px_32px_rgba(0,0,0,0.3)]', 'border', 'border-white/30', 'dark:border-gray-700/30', 'rounded-[32px]');
+							}
+							headerContent.classList.remove('bg-transparent');
+							
+							// 背景渐变装饰保持不变 - 不修改背景颜色
+					const bgGradient = headerContent.querySelector('.absolute.inset-0');
+					// 保持背景渐变装饰的类名不变
+					if (bgGradient) {
+						// 不修改背景颜色，保持固定的渐变背景
+					}
+						} else {
+								// 顶部时的透明效果
+							const innerContent = headerContent.querySelector('.relative.flex');
+							if (innerContent) {
+								innerContent.classList.remove('bg-white/80', 'dark:bg-gray-800/80', 'backdrop-blur-3xl', 'shadow-[0_8px_32px_rgba(0,0,0,0.12)]', 'dark:shadow-[0_8px_32px_rgba(0,0,0,0.3)]', 'border', 'border-white/30', 'dark:border-gray-700/30', 'rounded-[32px]');
+								innerContent.classList.add('bg-transparent', 'rounded-[32px]');
+							}
+							
+							// 背景渐变装饰保持不变 - 不移除背景颜色
+					const bgGradient = headerContent.querySelector('.absolute.inset-0');
+					// 保持背景渐变装饰的类名不变
+					if (bgGradient) {
+						// 不修改背景颜色，保持固定的渐变背景
+					}
+						}
+					}
+
+					// 初始化
+					updateHeader();
+
+					// 监听滚动事件
+					let ticking = false;
+					function handleScroll() {
+						if (!ticking) {
+							requestAnimationFrame(() => {
+								updateHeader();
+								ticking = false;
+							});
+							ticking = true;
+						}
+					}
+
+					window.addEventListener('scroll', handleScroll, { passive: true });
+				}
+
+				// 立即执行或等待DOMContentLoaded
+				if (document.readyState === 'loading') {
+					document.addEventListener('DOMContentLoaded', initSmartHeader);
+				} else {
+					initSmartHeader();
+				}
+			})();
+		</script>
+
+		<!-- 回到顶部脚本 -->
+		<script is:inline>
+			const backToTopButton = document.getElementById('back-to-top');
+			
+			function toggleBackToTop() {
+				if (window.scrollY > 300) {
+					backToTopButton.classList.remove('translate-y-full', 'opacity-0');
+					backToTopButton.classList.add('translate-y-0', 'opacity-100');
+				} else {
+					backToTopButton.classList.add('translate-y-full', 'opacity-0');
+					backToTopButton.classList.remove('translate-y-0', 'opacity-100');
+				}
+			}
+			
+			backToTopButton?.addEventListener('click', () => {
+				window.scrollTo({
+					top: 0,
+					behavior: 'smooth'
+				});
+			});
+			
+			window.addEventListener('scroll', toggleBackToTop);
+			toggleBackToTop(); // 初始化
+		</script>
+
+		<!-- 导航栏搜索功能 -->
+		<script is:inline>
+			(function() {
+				// 等待DOM加载完成
+				function initNavSearch() {
+					const searchBtn = document.getElementById('nav-search-btn');
+					if (!searchBtn) return;
+
+					// 处理搜索按钮点击
+					searchBtn.addEventListener('click', function() {
+						const searchInput = document.getElementById('search-input');
+						
+						if (searchInput) {
+							// 如果搜索框已存在，聚焦到它
+							searchInput.focus();
+							searchInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+						} else {
+							// 如果当前页面没有搜索框，跳转到首页
+							window.location.href = '/#search';
+						}
+					});
+				}
+
+				// 立即执行或等待DOMContentLoaded
+				if (document.readyState === 'loading') {
+					document.addEventListener('DOMContentLoaded', initNavSearch);
+				} else {
+					initNavSearch();
+				}
+			})();
+		</script>
+	</body>
+</html>
+
+  

@@ -1,0 +1,255 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+
+// 获取所有链接和分类
+const allLinks = await getCollection('links');
+const categories = [...new Set(allLinks.map(link => link.data.category))].sort();
+
+// 为每个分类计算链接数量
+const categoryStats = categories.map(category => ({
+  name: category,
+  count: allLinks.filter(link => link.data.category === category).length,
+  color: ['from-blue-500 to-cyan-500', 'from-purple-500 to-pink-500', 'from-green-500 to-emerald-500', 'from-orange-500 to-red-500', 'from-indigo-500 to-purple-500', 'from-pink-500 to-rose-500'][Math.floor(Math.random() * 6)]
+}));
+
+// 获取最新添加的链接
+const latestLinks = allLinks
+  .sort((a, b) => new Date(b.data.date || 0).getTime() - new Date(a.data.date || 0).getTime())
+  .slice(0, 6);
+
+// 计算总统计
+const totalStats = {
+  totalLinks: allLinks.length,
+  totalCategories: categories.length,
+  avgLinksPerCategory: Math.round(allLinks.length / categories.length)
+};
+---
+
+<Layout 
+  title="分类总览 - TabLinks" 
+  description="浏览所有链接分类，快速找到你需要的资源"
+>
+  <style>
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateX(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+    
+    .animate-fadeIn {
+      animation: fadeIn 0.6s ease-out forwards;
+      opacity: 0;
+    }
+    
+    .animate-slideIn {
+      animation: slideIn 0.6s ease-out forwards;
+      opacity: 0;
+    }
+    
+    .line-clamp-2 {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+  </style>
+  <div class="max-w-7xl mx-auto">
+    <!-- 页面标题区域 -->
+    <div class="text-center mb-16">
+      <div class="mb-6">
+        <div class="w-20 h-20 mx-auto bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 rounded-3xl flex items-center justify-center shadow-2xl animate-pulse">
+          <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+          </svg>
+        </div>
+      </div>
+      <h1 class="text-5xl font-bold text-gray-900 dark:text-white mb-4 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+        分类总览
+      </h1>
+      <p class="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+        探索精心整理的链接分类，发现更多优质资源
+      </p>
+    </div>
+
+    <!-- 统计卡片 -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+      <div class="group bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300 border border-gray-100 dark:border-gray-700">
+        <div class="flex items-center">
+          <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+            </svg>
+          </div>
+          <div class="ml-6">
+            <div class="text-3xl font-bold text-gray-900 dark:text-white">{totalStats.totalLinks}</div>
+            <div class="text-gray-500 dark:text-gray-400">总链接数</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="group bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300 border border-gray-100 dark:border-gray-700">
+        <div class="flex items-center">
+          <div class="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+            </svg>
+          </div>
+          <div class="ml-6">
+            <div class="text-3xl font-bold text-gray-900 dark:text-white">{totalStats.totalCategories}</div>
+            <div class="text-gray-500 dark:text-gray-400">分类数量</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="group bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300 border border-gray-100 dark:border-gray-700">
+        <div class="flex items-center">
+          <div class="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+            </svg>
+          </div>
+          <div class="ml-6">
+            <div class="text-3xl font-bold text-gray-900 dark:text-white">{totalStats.avgLinksPerCategory}</div>
+            <div class="text-gray-500 dark:text-gray-400">平均链接数</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 分类网格 -->
+    <div class="mb-16">
+      <div class="flex items-center justify-between mb-8">
+        <h2 class="text-3xl font-bold text-gray-900 dark:text-white">所有分类</h2>
+        <div class="w-24 h-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full"></div>
+      </div>
+      
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {categoryStats.map((cat, index) => (
+          <a 
+            href={`/category/${cat.name.toLowerCase()}`}
+            class="group relative overflow-hidden bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-100 dark:border-gray-700 animate-fadeIn"
+            style={`animation-delay: ${index * 100}ms`}
+          >
+            <!-- 背景装饰 -->
+            <div class={`absolute inset-0 bg-gradient-to-br ${cat.color} opacity-0 group-hover:opacity-10 transition-opacity duration-300`}></div>
+            
+            <!-- 内容区域 -->
+            <div class="relative p-8">
+              <!-- 图标和标题 -->
+              <div class="mb-6">
+                <div class={`w-16 h-16 bg-gradient-to-br ${cat.color} rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}>
+                  <span class="text-2xl text-white font-bold">
+                    {cat.name.charAt(0).toUpperCase()}
+                  </span>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 dark:text-white group-hover:text-transparent bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text">
+                  {cat.name}
+                </h3>
+              </div>
+              
+              <!-- 统计信息 -->
+              <div class="space-y-2">
+                <div class="flex items-center justify-between">
+                  <span class="text-sm text-gray-500 dark:text-gray-400">链接数量</span>
+                  <span class="text-2xl font-bold text-gray-900 dark:text-white">{cat.count}</span>
+                </div>
+                
+                <!-- 进度条 -->
+                <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                  <div 
+                    class={`bg-gradient-to-r ${cat.color} h-2 rounded-full transition-all duration-500`}
+                    style={`width: ${Math.min((cat.count / totalStats.totalLinks) * 100, 100)}%`}
+                  ></div>
+                </div>
+              </div>
+              
+              <!-- 箭头指示 -->
+              <div class="absolute top-6 right-6">
+                <svg class="w-6 h-6 text-gray-400 group-hover:text-blue-500 transition-colors duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                </svg>
+              </div>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+
+    <!-- 最新添加的链接 -->
+    {latestLinks.length > 0 && (
+      <div class="mb-16">
+        <div class="flex items-center justify-between mb-8">
+          <h2 class="text-3xl font-bold text-gray-900 dark:text-white">最新添加</h2>
+          <a href="/" class="text-blue-600 hover:text-blue-700 font-medium flex items-center">
+            查看全部
+            <svg class="w-5 h-5 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          </a>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {latestLinks.map(link => (
+            <a 
+              href={link.data.url} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              class="group bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-gray-700"
+            >
+              <div class="flex items-start space-x-4">
+                <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <span class="text-white font-bold text-sm">
+                    {link.data.title.charAt(0).toUpperCase()}
+                  </span>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <h3 class="font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 transition-colors truncate">
+                    {link.data.title}
+                  </h3>
+                  <p class="text-sm text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">
+                    {link.data.description}
+                  </p>
+                  <div class="flex items-center mt-2 space-x-2">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                      {link.data.category}
+                    </span>
+                    <span class="text-xs text-gray-400">
+                      {new Date(link.data.date || 0).toLocaleDateString('zh-CN')}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </a>
+          ))}
+        </div>
+      </div>
+    )}
+
+    <!-- 快速导航 -->
+    <div class="text-center">
+      <div class="inline-flex items-center space-x-4 bg-white dark:bg-gray-800 rounded-2xl px-8 py-4 shadow-lg">
+        <a href="/" class="text-blue-600 hover:text-blue-700 font-medium">返回首页</a>
+        <div class="w-1 h-4 bg-gray-300 dark:bg-gray-600 rounded-full"></div>
+        <span class="text-gray-500 dark:text-gray-400">或</span>
+        <a href="/admin" class="text-green-600 hover:text-green-700 font-medium">添加新链接</a>
+      </div>
+    </div>
+  </div>
+</Layout>

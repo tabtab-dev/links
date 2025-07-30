@@ -1,0 +1,226 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import LinkCard from '../../components/LinkCard.astro';
+import SearchBox from '../../components/SearchBox.astro';
+import { getCollection } from 'astro:content';
+
+// 获取所有链接数据
+const allLinks = await getCollection('links');
+
+// 生成分页静态路径
+export async function getStaticPaths() {
+  const links = await getCollection('links');
+  const perPage = 6; // 每页显示6个链接，根据实际数据量调整
+  const totalPages = Math.ceil(links.length / perPage);
+  
+  // 为每一页生成静态路径
+  const paths = [];
+  for (let page = 1; page <= totalPages; page++) {
+    paths.push({
+      params: { page: page.toString() },
+      props: { 
+        currentPage: page,
+        totalPages,
+        perPage,
+        totalLinks: links.length
+      }
+    });
+  }
+  
+  return paths;
+}
+
+// 获取当前页码和分页信息
+const { currentPage, totalPages, perPage, totalLinks } = Astro.props;
+
+// 计算当前页的数据范围
+const startIndex = (currentPage - 1) * perPage;
+const endIndex = startIndex + perPage;
+const paginatedLinks = allLinks
+  .slice(startIndex, endIndex)
+  .sort((a, b) => a.data.title.localeCompare(b.data.title));
+
+// 获取所有分类用于筛选
+const categories = [...new Set(allLinks.map(link => link.data.category))];
+
+// 生成分页URL
+function getPageUrl(pageNum: number) {
+  return pageNum === 1 ? '/links' : `/links/${pageNum}`;
+}
+
+// 生成分页范围
+function getPageRange(current: number, total: number) {
+  const range = [];
+  const start = Math.max(1, current - 2);
+  const end = Math.min(total, current + 2);
+  
+  for (let i = start; i <= end; i++) {
+    range.push(i);
+  }
+  
+  return range;
+}
+
+const pageRange = getPageRange(currentPage, totalPages);
+
+// SEO信息
+const title = currentPage > 1 ? `所有链接 - 第${currentPage}页 | TabLinks` : '所有链接 | TabLinks';
+const description = `浏览所有精选链接，第${currentPage}页，共${totalPages}页`;
+---
+
+<Layout title={title} description={description}>
+  <style>
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .animate-fadeIn {
+      animation: fadeIn 0.6s ease-out forwards;
+      opacity: 0;
+    }
+  </style>
+  
+  <div class="max-w-7xl mx-auto">
+    <!-- 页面标题 -->
+    <div class="text-center mb-12">
+      <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+        所有链接
+      </h1>
+      <p class="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+        浏览我们精心整理的 {totalLinks} 个高质量链接资源
+      </p>
+    </div>
+
+    <!-- 搜索和筛选区域 -->
+    <div class="mb-8">
+      <SearchBox placeholder="在所有链接中搜索..." />
+      
+      <!-- 统计信息 -->
+      <div class="flex justify-between items-center mt-6 text-sm text-gray-600 dark:text-gray-400">
+        <span>显示 {startIndex + 1}-{Math.min(endIndex, totalLinks)} / {totalLinks} 个链接</span>
+        <span>第 {currentPage} / {totalPages} 页</span>
+      </div>
+    </div>
+
+    <!-- 链接网格 -->
+    {paginatedLinks.length > 0 ? (
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-12">
+        {paginatedLinks.map((link, index) => (
+          <div 
+            class="animate-fadeIn"
+            style={`animation-delay: ${index * 50}ms`}
+          >
+            <LinkCard link={link} />
+          </div>
+        ))}
+      </div>
+    ) : (
+      <div class="text-center py-20">
+        <div class="w-20 h-20 mx-auto mb-6 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center">
+          <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+          </svg>
+        </div>
+        <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">暂无链接</h3>
+        <p class="text-gray-500 dark:text-gray-400">还没有添加任何链接</p>
+      </div>
+    )}
+
+    <!-- 分页导航 -->
+    {totalPages > 1 && (
+      <nav class="flex justify-center items-center space-x-2" aria-label="分页导航">
+        <!-- 上一页 -->
+        <a
+          href={currentPage > 1 ? getPageUrl(currentPage - 1) : '#'}
+          class={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+            currentPage > 1
+              ? 'bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
+              : 'bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed'
+          }`}
+          aria-disabled={currentPage <= 1}
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+          </svg>
+        </a>
+
+        <!-- 首页 -->
+        {currentPage > 3 && (
+          <a
+            href={getPageUrl(1)}
+            class="px-4 py-2 rounded-lg text-sm font-medium bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+          >
+            1
+          </a>
+        )}
+
+        <!-- 省略号 -->
+        {currentPage > 4 && (
+          <span class="px-2 py-2 text-sm text-gray-500 dark:text-gray-400">...</span>
+        )}
+
+        <!-- 页码 -->
+        {pageRange.map(pageNum => (
+          <a
+            href={getPageUrl(pageNum)}
+            class={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+              pageNum === currentPage
+                ? 'bg-blue-500 text-white shadow-lg'
+                : 'bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
+            }`}
+            aria-current={pageNum === currentPage ? 'page' : undefined}
+          >
+            {pageNum}
+          </a>
+        ))}
+
+        <!-- 省略号 -->
+        {currentPage < totalPages - 3 && (
+          <span class="px-2 py-2 text-sm text-gray-500 dark:text-gray-400">...</span>
+        )}
+
+        <!-- 末页 -->
+        {currentPage < totalPages - 2 && (
+          <a
+            href={getPageUrl(totalPages)}
+            class="px-4 py-2 rounded-lg text-sm font-medium bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+          >
+            {totalPages}
+          </a>
+        )}
+
+        <!-- 下一页 -->
+        <a
+          href={currentPage < totalPages ? getPageUrl(currentPage + 1) : '#'}
+          class={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+            currentPage < totalPages
+              ? 'bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
+              : 'bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed'
+          }`}
+          aria-disabled={currentPage >= totalPages}
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+          </svg>
+        </a>
+      </nav>
+    )}
+
+    <!-- 快捷导航 -->
+    <div class="mt-12 text-center">
+      <a href="/" class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl">
+        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"/>
+        </svg>
+        返回首页
+      </a>
+    </div>
+  </div>
+</Layout>

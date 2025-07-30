@@ -1,0 +1,229 @@
+---
+export interface Props {
+  placeholder?: string;
+}
+
+const { placeholder = '搜索链接...' } = Astro.props;
+---
+
+<div class="mb-8 max-w-2xl mx-auto search-container">
+  <div class="relative group">
+    <!-- 搜索输入框 -->
+    <div class="relative">
+      <input
+        type="text"
+        id="search-input"
+        placeholder={placeholder}
+        class="w-full px-4 py-4 pl-12 pr-12 text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-200 shadow-sm hover:shadow-md"
+      />
+      <!-- 搜索图标 -->
+      <div class="absolute left-4 top-1/2 transform -translate-y-1/2 pointer-events-none">
+        <svg class="w-5 h-5 text-gray-400 group-focus-within:text-blue-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+        </svg>
+      </div>
+      <!-- 清除按钮 -->
+      <button 
+        id="clear-search"
+        class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hidden transition-colors hover:scale-110"
+        aria-label="清除搜索"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+    
+    <!-- 搜索统计 -->
+    <div id="search-stats" class="mt-2 text-sm text-gray-500 dark:text-gray-400 hidden">
+      <span id="search-count">0</span> 个结果
+    </div>
+  </div>
+  
+  <!-- 搜索结果容器 -->
+  <div id="search-results" class="mt-4 hidden">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+      <div id="search-results-content" class="max-h-96 overflow-y-auto">
+        <!-- 搜索结果将在这里显示 -->
+      </div>
+    </div>
+  </div>
+  
+  <!-- 热门搜索 -->
+  <div id="popular-searches" class="mt-4">
+    <div class="flex items-center space-x-2">
+      <span class="text-sm text-gray-500 dark:text-gray-400">热门搜索：</span>
+      <div class="flex flex-wrap gap-2">
+        <button class="search-tag px-3 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full hover:bg-blue-100 dark:hover:bg-blue-900/30 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+          工具
+        </button>
+        <button class="search-tag px-3 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full hover:bg-blue-100 dark:hover:bg-blue-900/30 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+          设计
+        </button>
+        <button class="search-tag px-3 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full hover:bg-blue-100 dark:hover:bg-blue-900/30 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+          开发
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// 搜索功能实现
+const searchInput = document.getElementById('search-input') as HTMLInputElement;
+const searchResults = document.getElementById('search-results');
+const searchResultsContent = document.getElementById('search-results-content');
+const clearSearch = document.getElementById('clear-search');
+const searchStats = document.getElementById('search-stats');
+const searchCount = document.getElementById('search-count');
+
+let allLinks: any[] = [];
+let searchTimeout: NodeJS.Timeout | null = null;
+
+// 加载链接数据
+async function loadLinks() {
+  try {
+    const response = await fetch('/api/links.json');
+    allLinks = await response.json();
+  } catch (error) {
+    console.error('Failed to load links:', error);
+  }
+}
+
+// 防抖搜索
+function debounceSearch(query: string) {
+  if (searchTimeout) {
+    clearTimeout(searchTimeout);
+  }
+  
+  searchTimeout = setTimeout(() => {
+    performSearch(query);
+  }, 200);
+}
+
+// 执行搜索
+function performSearch(query: string) {
+  if (!query.trim()) {
+    hideResults();
+  }
+  
+  // 触发自定义事件，让主页面的筛选逻辑处理
+  const event = new CustomEvent('search-change', {
+    detail: { query: query.toLowerCase() }
+  });
+  document.dispatchEvent(event);
+  
+  const searchTerm = query.toLowerCase();
+  const results = allLinks.filter(link => 
+    link.title.toLowerCase().includes(searchTerm) ||
+    link.description?.toLowerCase().includes(searchTerm) ||
+    link.category.toLowerCase().includes(searchTerm) ||
+    link.tags?.some((tag: string) => tag.toLowerCase().includes(searchTerm))
+  );
+
+  displayResults(results);
+}
+
+// 显示搜索结果
+function displayResults(results: any[]) {
+  if (results.length === 0) {
+    searchResultsContent.innerHTML = `
+      <div class="p-8 text-center">
+        <div class="w-16 h-16 mx-auto mb-4 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center">
+          <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+          </svg>
+        </div>
+        <p class="text-gray-500 dark:text-gray-400">没有找到相关链接</p>
+      </div>
+    `;
+  } else {
+    searchResultsContent.innerHTML = results.map(link => `
+      <a href="${link.url}" target="_blank" rel="noopener noreferrer" 
+         class="block p-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors border-b border-gray-100 dark:border-gray-700 last:border-b-0">
+        <div class="flex items-start space-x-3">
+          ${link.icon ? `<div class="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center flex-shrink-0"><span class="text-sm">${link.icon}</span></div>` : ''}
+          <div class="flex-1 min-w-0">
+            <h4 class="font-medium text-gray-900 dark:text-white truncate">${link.title}</h4>
+            ${link.description ? `<p class="text-sm text-gray-600 dark:text-gray-400 mt-1 line-clamp-2">${link.description}</p>` : ''}
+            <div class="flex items-center space-x-2 mt-2">
+              <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300">
+                ${link.category}
+              </span>
+              ${link.tags?.length ? `<span class="text-xs text-gray-500 dark:text-gray-400 truncate">${link.tags.join(', ')}</span>` : ''}
+            </div>
+          </div>
+          <svg class="w-4 h-4 text-gray-400 flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+          </svg>
+        </div>
+      </a>
+    `).join('');
+  }
+  
+  searchCount.textContent = results.length.toString();
+  searchStats.classList.remove('hidden');
+  searchResults.classList.remove('hidden');
+}
+
+// 隐藏搜索结果
+function hideResults() {
+  searchResults.classList.add('hidden');
+  searchStats.classList.add('hidden');
+  
+  // 触发空搜索事件
+  const event = new CustomEvent('search-change', {
+    detail: { query: '' }
+  });
+  document.dispatchEvent(event);
+}
+
+// 清除搜索
+function clearSearchInput() {
+  searchInput.value = '';
+  hideResults();
+  searchInput.focus();
+}
+
+// 初始化
+loadLinks();
+
+// 事件监听
+searchInput?.addEventListener('input', (e) => {
+  const target = e.target as HTMLInputElement;
+  
+  if (target.value.trim()) {
+    clearSearch?.classList.remove('hidden');
+  } else {
+    clearSearch?.classList.add('hidden');
+  }
+  
+  debounceSearch(target.value);
+});
+
+clearSearch?.addEventListener('click', clearSearchInput);
+
+// 热门搜索标签
+document.querySelectorAll('.search-tag').forEach(tag => {
+  tag.addEventListener('click', () => {
+    const searchText = (tag as HTMLElement).textContent?.trim() || '';
+    searchInput.value = searchText;
+    searchInput.focus();
+    performSearch(searchText);
+  });
+});
+
+// 点击外部关闭搜索结果
+document.addEventListener('click', (e) => {
+  if (!searchInput?.contains(e.target as Node) && !searchResults?.contains(e.target as Node)) {
+    hideResults();
+  }
+});
+
+// 键盘快捷键
+searchInput?.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    clearSearchInput();
+  }
+});
+</script>
